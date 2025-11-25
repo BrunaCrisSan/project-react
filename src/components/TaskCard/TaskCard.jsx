@@ -12,3 +12,8 @@ const TaskCard = ({ task, onStatusChange }) => {
     }
   };
 };
+const handleStatusChange = (newStatus) => {
+  if (onStatusChange) {
+    onStatusChange(task.id, newStatus);
+  }
+};
