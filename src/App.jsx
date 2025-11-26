@@ -2,10 +2,11 @@ import { useState } from 'react';
 import Header from './Header';
 import TaskColumn from './components/TaskColumn/TaskColumn';
 import AddTaskForm from './components/AddTaskForm/AddTaskForm';
+import { useDragAndDrop } from './hooks/useDragAndDrop';
 import './App.css';
 
 function App() {
-  const [tasks, setTasks] = useState([
+  const initialTasks = [
     {
       id: 1,
       title: 'Criar layout inicial',
@@ -47,7 +48,9 @@ function App() {
       priority: 'low',
       status: 'pending',
     },
-  ]);
+  ];
+
+  const { tasks, setTasks, moveTask } = useDragAndDrop(initialTasks);
 
   const handleTaskStatusChange = (id, newStatus) => {
     setTasks((prev) =>
@@ -57,7 +60,6 @@ function App() {
     );
   };
 
-  // NOVA FUNÇÃO: Adicionar tarefa
   const handleAddTask = (newTask) => {
     setTasks((prev) => [...prev, newTask]);
   };
@@ -65,15 +67,17 @@ function App() {
   return (
     <>
       <Header />
+
       <div className="main-content">
         <AddTaskForm onAddTask={handleAddTask} />
 
         <div className="columns">
           <TaskColumn
-            title="Pendente"
+            title="Pendentes"
             status="pending"
             tasks={tasks}
             onTaskStatusChange={handleTaskStatusChange}
+            moveTask={moveTask}
           />
 
           <TaskColumn
@@ -81,6 +85,7 @@ function App() {
             status="in_progress"
             tasks={tasks}
             onTaskStatusChange={handleTaskStatusChange}
+            moveTask={moveTask}
           />
 
           <TaskColumn
@@ -88,6 +93,7 @@ function App() {
             status="completed"
             tasks={tasks}
             onTaskStatusChange={handleTaskStatusChange}
+            moveTask={moveTask}
           />
         </div>
       </div>

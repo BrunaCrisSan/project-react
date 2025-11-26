@@ -1,7 +1,15 @@
-import { TASK_PRIORITY } from '../../types/task';
 import './TaskCard.css';
+import { useDrag } from 'react-dnd';
 
 const TaskCard = ({ task, onStatusChange }) => {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'task',
+    item: { id: task.id, status: task.status },
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  }));
+
   const getPriorityClass = (priority) => {
     switch (priority) {
       case 'high':
@@ -22,7 +30,12 @@ const TaskCard = ({ task, onStatusChange }) => {
   };
 
   return (
-    <div className={`task-card ${getPriorityClass(task.priority)}`}>
+    <div
+      ref={drag}
+      className={`task-card ${getPriorityClass(task.priority)} ${
+        isDragging ? 'dragging' : ''
+      }`}
+    >
       <div className="task-header">
         <h3 className="task-title">{task.title}</h3>
         <span className={`priority-badge ${getPriorityClass(task.priority)}`}>
@@ -34,7 +47,6 @@ const TaskCard = ({ task, onStatusChange }) => {
 
       <div className="task-footer">
         <span className="task-assignee">👤 {task.assignee}</span>
-
         <div className="task-actions">
           <select
             value={task.status}
@@ -42,7 +54,7 @@ const TaskCard = ({ task, onStatusChange }) => {
             className="status-select"
           >
             <option value="pending">⏳ Pendente</option>
-            <option value="in-progress">🔄 Em Andamento</option>
+            <option value="in_progress">🔄 Em Andamento</option>
             <option value="completed">✅ Concluída</option>
           </select>
         </div>

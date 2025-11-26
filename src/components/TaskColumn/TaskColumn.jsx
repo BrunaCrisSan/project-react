@@ -1,15 +1,25 @@
-import './TaskColumn.css';
 import TaskCard from '../TaskCard/TaskCard';
+import './TaskColumn.css';
+import { useDrop } from 'react-dnd';
 
-const TaskColumn = ({ title, status, tasks = [], onTaskStatusChange }) => {
-  const normalize = (s) => (s ? s.replace('_', '-').replace(/\s+/g, '-') : s);
+const TaskColumn = ({ title, status, tasks, onTaskStatusChange, moveTask }) => {
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: 'task',
+    drop: (item) => {
+      if (item.status !== status) {
+        moveTask(item.id, status);
+      }
+    },
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+    }),
+  }));
 
-  const getStatusIcon = (st) => {
-    const s = normalize(st);
-    switch (s) {
+  const getStatusIcon = (status) => {
+    switch (status) {
       case 'pending':
         return '⏳';
-      case 'in-progress':
+      case 'in_progress':
         return '🔄';
       case 'completed':
         return '✅';
@@ -18,15 +28,10 @@ const TaskColumn = ({ title, status, tasks = [], onTaskStatusChange }) => {
     }
   };
 
-  // compara aceitando "in-progress" ou "in_progress"
-  const columnTasks = tasks.filter((task) => {
-    const taskStatus = normalize(task?.status);
-    const columnStatus = normalize(status);
-    return taskStatus === columnStatus;
-  });
+  const columnTasks = tasks.filter((task) => task.status === status);
 
   return (
-    <div className="task-column">
+    <div ref={drop} className={`task-column ${isOver ? 'drag-over' : ''}`}>
       <div className="column-header">
         <h3>
           {getStatusIcon(status)} {title}
@@ -42,9 +47,10 @@ const TaskColumn = ({ title, status, tasks = [], onTaskStatusChange }) => {
             onStatusChange={onTaskStatusChange}
           />
         ))}
-
         {columnTasks.length === 0 && (
-          <div className="empty-column">Nenhuma tarefa aqui</div>
+          <div className="empty-column">
+            {isOver ? 'Solte aqui!' : 'Arraste tarefas aqui'}
+          </div>
         )}
       </div>
     </div>
