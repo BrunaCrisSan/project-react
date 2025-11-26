@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Header from './Header';
 import TaskColumn from './components/TaskColumn/TaskColumn';
+import AddTaskForm from './components/AddTaskForm/AddTaskForm';
 import './App.css';
 
 function App() {
@@ -56,31 +57,39 @@ function App() {
     );
   };
 
+  // NOVA FUNÇÃO: Adicionar tarefa
+  const handleAddTask = (newTask) => {
+    setTasks((prev) => [...prev, newTask]);
+  };
+
   return (
     <>
       <Header />
+      <div className="main-content">
+        <AddTaskForm onAddTask={handleAddTask} />
 
-      <div className="columns">
-        <TaskColumn
-          title="Pendente"
-          status="pending"
-          tasks={tasks}
-          onTaskStatusChange={handleTaskStatusChange}
-        />
+        <div className="columns">
+          <TaskColumn
+            title="Pendente"
+            status="pending"
+            tasks={tasks}
+            onTaskStatusChange={handleTaskStatusChange}
+          />
 
-        <TaskColumn
-          title="Em Andamento"
-          status="in_progress"
-          tasks={tasks}
-          onTaskStatusChange={handleTaskStatusChange}
-        />
+          <TaskColumn
+            title="Em Andamento"
+            status="in_progress"
+            tasks={tasks}
+            onTaskStatusChange={handleTaskStatusChange}
+          />
 
-        <TaskColumn
-          title="Concluídas"
-          status="completed"
-          tasks={tasks}
-          onTaskStatusChange={handleTaskStatusChange}
-        />
+          <TaskColumn
+            title="Concluídas"
+            status="completed"
+            tasks={tasks}
+            onTaskStatusChange={handleTaskStatusChange}
+          />
+        </div>
       </div>
     </>
   );
