@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Header from './Header';
 import TaskColumn from './components/TaskColumn/TaskColumn';
 import AddTaskForm from './components/AddTaskForm/AddTaskForm';
@@ -6,70 +5,65 @@ import { useDragAndDrop } from './hooks/useDragAndDrop';
 import './App.css';
 
 function App() {
-  const initialTasks = [
-    {
-      id: 1,
-      title: 'Criar layout inicial',
-      description: 'Desenvolver wireframes e protótipo do sistema',
-      assignee: 'Bruna',
-      priority: 'high',
-      status: 'completed',
-    },
-    {
-      id: 2,
-      title: 'Implementar componente Header',
-      description: 'Criar header responsivo com navegação',
-      assignee: 'Bruna',
-      priority: 'high',
-      status: 'completed',
-    },
-    {
-      id: 3,
-      title: 'Sistema de drag and drop',
-      description:
-        'Implementar funcionalidade de arrastar tarefas entre colunas',
-      assignee: 'Carlos',
-      priority: 'medium',
-      status: 'in_progress',
-    },
-    {
-      id: 4,
-      title: 'API de autenticação',
-      description: 'Integrar com serviço de autenticação JWT',
-      assignee: 'Ana',
-      priority: 'high',
-      status: 'pending',
-    },
-    {
-      id: 5,
-      title: 'Testes unitários',
-      description: 'Criar suite de testes para componentes críticos',
-      assignee: 'Pedro',
-      priority: 'low',
-      status: 'pending',
-    },
-  ];
-
-  const { tasks, setTasks, moveTask } = useDragAndDrop(initialTasks);
+  const {
+    tasks,
+    isLoading,
+    moveTask,
+    addTask,
+    updateTask,
+    deleteTask,
+    clearAllTasks,
+  } = useDragAndDrop();
 
   const handleTaskStatusChange = (id, newStatus) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, status: newStatus } : task,
-      ),
-    );
+    updateTask(id, { status: newStatus });
   };
 
-  const handleAddTask = (newTask) => {
-    setTasks((prev) => [...prev, newTask]);
+  const handleAddTask = (newTaskData) => {
+    addTask(newTaskData);
   };
+
+  if (isLoading) {
+    return (
+      <>
+        <Header />
+        <div className="main-content">
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p>Carregando suas tarefas...</p>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
       <Header />
 
       <div className="main-content">
-        <AddTaskForm onAddTask={handleAddTask} />
+        <div className="app-header">
+          <AddTaskForm onAddTask={handleAddTask} />
+
+          <div className="app-actions">
+            <button
+              onClick={clearAllTasks}
+              className="clear-btn"
+              title="Limpar todas as tarefas"
+            >
+              🗑️ Limpar Tudo
+            </button>
+
+            <div className="tasks-stats">
+              <span>Total: {tasks.length} tarefas</span>
+              <span>•</span>
+              <span>
+                Concluídas:{' '}
+                {tasks.filter((t) => t.status === 'completed').length}
+              </span>
+            </div>
+          </div>
+        </div>
 
         <div className="columns">
           <TaskColumn

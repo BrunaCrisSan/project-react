@@ -13,13 +13,15 @@ const AddTaskForm = ({ onAddTask }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!formData.title.trim()) return;
+    if (!formData.title.trim()) {
+      alert('Por favor, insira um título para a tarefa.');
+      return;
+    }
 
     const newTask = {
-      id: Date.now(), // ID temporário
-      title: formData.title,
-      description: formData.description,
-      assignee: formData.assignee || 'Não atribuído',
+      title: formData.title.trim(),
+      description: formData.description.trim(),
+      assignee: formData.assignee.trim() || 'Não atribuído',
       priority: formData.priority,
       status: 'pending',
     };
@@ -59,35 +61,40 @@ const AddTaskForm = ({ onAddTask }) => {
             onChange={handleChange}
             required
             className="form-input"
+            autoFocus
           />
 
           <textarea
             name="description"
-            placeholder="Descrição"
+            placeholder="Descrição (opcional)"
             value={formData.description}
             onChange={handleChange}
             className="form-textarea"
+            rows="3"
           />
 
           <input
             type="text"
             name="assignee"
-            placeholder="Responsável"
+            placeholder="Responsável (opcional)"
             value={formData.assignee}
             onChange={handleChange}
             className="form-input"
           />
 
-          <select
-            name="priority"
-            value={formData.priority}
-            onChange={handleChange}
-            className="form-select"
-          >
-            <option value="low">Baixa Prioridade</option>
-            <option value="medium">Média Prioridade</option>
-            <option value="high">Alta Prioridade</option>
-          </select>
+          <div className="form-group">
+            <label>Prioridade:</label>
+            <select
+              name="priority"
+              value={formData.priority}
+              onChange={handleChange}
+              className="form-select"
+            >
+              <option value="low">🟢 Baixa</option>
+              <option value="medium">🟡 Média</option>
+              <option value="high">🔴 Alta</option>
+            </select>
+          </div>
 
           <div className="form-actions">
             <button type="submit" className="submit-btn">
